@@ -1,0 +1,112 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "cart-items": {
+      "type": "main-cart-items",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "cart-footer": {
+      "type": "main-cart-footer",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 20,
+        "padding_bottom": 40
+      },
+      "blocks": {
+        "subtotal": {
+          "type": "subtotal",
+          "settings": {
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+          }
+        }
+      },
+      "block_order": [
+        "subtotal",
+        "buttons"
+      ]
+    },
+    "main-home-instaImg": {
+      "type": "main-home-instaImg",
+      "blocks": {
+        "instagram_item_zQ6Tdh": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-2.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        },
+        "instagram_item_ggExby": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-3.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        },
+        "instagram_item_QfHC9Q": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-4.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        },
+        "instagram_item_hcnLPn": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-5.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        },
+        "instagram_item_UTjEYq": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-3.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        },
+        "instagram_item_wEwqLg": {
+          "type": "instagram_item",
+          "settings": {
+            "image": "shopify://shop_images/insta-6.jpg",
+            "instagram_link": "",
+            "instagram_handle": "@shope"
+          }
+        }
+      },
+      "block_order": [
+        "instagram_item_zQ6Tdh",
+        "instagram_item_ggExby",
+        "instagram_item_QfHC9Q",
+        "instagram_item_hcnLPn",
+        "instagram_item_UTjEYq",
+        "instagram_item_wEwqLg"
+      ],
+      "settings": {}
+    }
+  }, 
+  "order": [
+    "cart-items",
+    "cart-footer",
+    "main-home-instaImg"
+  ]
+}

@@ -1,0 +1,698 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- unless section.settings.quick_add == 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endunless -%}
+
+{%- if section.settings.quick_add == 'standard' -%}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.quick_add == 'bulk' -%}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign products_to_display = section.settings.collection.all_products_count
+
+  if section.settings.collection.all_products_count > section.settings.products_to_show
+    assign products_to_display = section.settings.products_to_show
+    assign more_in_collection = true
+  endif
+
+  assign columns_mobile_int = section.settings.columns_mobile | plus: 0
+  assign show_mobile_slider = false
+  if section.settings.swipe_on_mobile and products_to_display > columns_mobile_int
+    assign show_mobile_slider = true
+  endif
+
+  assign show_desktop_slider = false
+  if section.settings.enable_desktop_slider and products_to_display > section.settings.columns_desktop
+    assign show_desktop_slider = true
+  endif
+-%}
+<style>
+    .wishlist-active {
+            color: red;
+          }
+    .cart-popup {
+    position: fixed;
+    top: 20px;
+    right: -350px;
+    width: 300px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-popup.show {
+    right: 20px;
+  }
+
+  .cart-popup__content {
+    padding: 15px;
+  }
+
+  .cart-popup__close {
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+  }
+
+  .cart-popup__item {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cart-popup__img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+
+  .cart-popup__info h6 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .cart-popup__info p {
+    margin: 0;
+    color: #555;
+    font-size: 12px;
+  }
+</style>
+<!-- Add a container for the floating cart box -->
+<div id="cart-popup" class="cart-popup container p-3 border rounded shadow-sm">
+  <div class="success-msg text-center mb-3" id="success-msg" style="color: green; font-weight: bold;">
+    Added to cart successfully ✔
+  </div>
+  <div class="cart-popup__content d-flex align-items-center justify-content-between">
+    <!-- Cart details -->
+    <div id="cart-popup__details" class="flex-grow-1 text-left ps-3"></div>
+    <!-- Close button -->
+    <div class="cart-popup__close">
+      <i class="fa-solid fa-xmark" style="cursor: pointer;"></i>
+    </div>
+  </div>
+</div>
+
+<div
+  class="color-{{ section.settings.color_scheme }} isolate gradient"
+>
+  <section class="product spad">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-4">
+          <div class="section-title">
+            <h4>New Products</h4>
+          </div>
+        </div>
+        <div class="col-lg-8 col-md-8">
+          <ul class="filter__controls">
+            <li class="active" data-filter="*">All</li>
+            <li data-filter=".women">Women’s</li>
+            <li data-filter=".men">Men’s</li>
+            <li data-filter=".kid">Kid’s</li>
+            <li data-filter=".accessories">Accessories</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row property__gallery">
+        {% assign count = 0 %}
+        {% for product in collections.all.products %}
+          {% if count < 8 %}
+            {% assign category = '' %}
+            {% if product.tags contains 'women' %}
+              {% assign category = 'women' %}
+            {% elsif product.tags contains 'men' %}
+              {% assign category = 'men' %}
+            {% elsif product.tags contains 'kid' %}
+              {% assign category = 'kid' %}
+            {% elsif product.tags contains 'accessories' %}
+              {% assign category = 'accessories' %}
+            {% elsif product.tags contains 'cosmetic' %}
+              {% assign category = 'cosmetic' %}
+            {% endif %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mix {{ category }}">
+              <div class="product__item">
+                <div class="product__item__pic set-bg" data-setbg="{{ product.featured_image | img_url: '500x500' }}">
+                  {% if product.tags contains 'new' %}
+                    <div class="label new">New</div>
+                  {% endif %}
+                  {% if product.available %}
+                    <span class="label in-stock"></span>
+                  {% else %}
+                    <div class="label stockout">Out of Stock</div>
+                  {% endif %}
+                  <ul class="product__hover">
+                    <li>
+                      <a href="{{ product.featured_image | img_url: 'original' }}" class="image-popup"
+                        ><span>
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            fill="#000000"
+                          >
+                            <g><path d="M 29.922,2.618c-0.102-0.244-0.296-0.44-0.54-0.54C 29.26,2.026, 29.13,2, 29,2l-8,0 C 20.448,2, 20,2.448, 20,3 C 20,3.552, 20.448,4, 21,4l 5.586,0 L 18.292,12.292c-0.39,0.39-0.39,1.024,0,1.414c 0.39,0.39, 1.024,0.39, 1.414,0L 28,5.414L 28,11 C 28,11.552, 28.448,12, 29,12S 30,11.552, 30,11l0-8 l0,0C 30,2.87, 29.974,2.74, 29.922,2.618zM 3,20C 2.448,20, 2,20.448, 2,21l0,8 c0,0.002,0,0.002,0,0.004c0,0.13, 0.026,0.258, 0.076,0.378 c 0.048,0.118, 0.12,0.224, 0.208,0.314c 0.004,0.004, 0.004,0.008, 0.008,0.012c 0.002,0.002, 0.006,0.002, 0.008,0.006 c 0.090,0.088, 0.198,0.162, 0.316,0.21C 2.74,29.974, 2.87,30, 3,30l 8,0 C 11.552,30, 12,29.552, 12,29C 12,28.448, 11.552,28, 11,28L 5.414,28 l 8.292-8.292c 0.39-0.39, 0.39-1.024,0-1.414c-0.39-0.39-1.024-0.39-1.414,0L 4,26.586L 4,21 C 4,20.448, 3.552,20, 3,20z"></path></g>
+                          </svg></span
+                      ></a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0);" class="wishlist-btn" data-product-id="{{ product.id }}"
+                        ><span>
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            fill="#000000"
+                          >
+                            <g><path d="M 31.984,13.834C 31.9,8.926, 27.918,4.552, 23,4.552c-2.844,0-5.35,1.488-7,3.672 C 14.35,6.040, 11.844,4.552, 9,4.552c-4.918,0-8.9,4.374-8.984,9.282L0,13.834 c0,0.030, 0.006,0.058, 0.006,0.088 C 0.006,13.944,0,13.966,0,13.99c0,0.138, 0.034,0.242, 0.040,0.374C 0.48,26.872, 15.874,32, 15.874,32s 15.62-5.122, 16.082-17.616 C 31.964,14.244, 32,14.134, 32,13.99c0-0.024-0.006-0.046-0.006-0.068C 31.994,13.89, 32,13.864, 32,13.834L 31.984,13.834 z M 29.958,14.31 c-0.354,9.6-11.316,14.48-14.080,15.558c-2.74-1.080-13.502-5.938-13.84-15.596C 2.034,14.172, 2.024,14.080, 2.010,13.98 c 0.002-0.036, 0.004-0.074, 0.006-0.112C 2.084,9.902, 5.282,6.552, 9,6.552c 2.052,0, 4.022,1.048, 5.404,2.878 C 14.782,9.93, 15.372,10.224, 16,10.224s 1.218-0.294, 1.596-0.794C 18.978,7.6, 20.948,6.552, 23,6.552c 3.718,0, 6.916,3.35, 6.984,7.316 c0,0.038, 0.002,0.076, 0.006,0.114C 29.976,14.080, 29.964,14.184, 29.958,14.31z"></path></g>
+                          </svg></span
+                      ></a>
+                    </li>
+                    <li>
+                      <a
+                        href="javascript:void(0);"
+                        class="add-to-cart"
+                        data-id="{{ product.variants.first.id }}"
+                        data-image="{{ product.featured_image | img_url: '100x100' }}"
+                        data-name="{{ product.title }}"
+                        data-price="{{ product.price | money }}"
+                        ><span>
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            fill="#000000"
+                          >
+                            <g><path d="M 6,32l 20,0 c 1.104,0, 2-0.896, 2-2L 28,8 c0-1.104-0.896-2-2-2l-4.010,0 C 21.942,2.678, 19.282,0, 16,0S 10.058,2.678, 10.010,6 L 6,6 C 4.896,6, 4,6.896, 4,8l0,22 C 4,31.104, 4.896,32, 6,32z M 26,8l0,22 L 6,30 L 6,8 L 26,8 z M 16,2c 2.174,0, 3.942,1.786, 3.99,4L 12.010,6 C 12.058,3.786, 13.826,2, 16,2zM 13,12l 6,0 C 19.552,12, 20,11.552, 20,11C 20,10.448, 19.552,10, 19,10l-6,0 C 12.448,10, 12,10.448, 12,11C 12,11.552, 12.448,12, 13,12z "></path></g>
+                          </svg></span
+                      ></a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="product__item__text">
+                  <h6 class="m-0 mb-1">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h6>
+                  <div class="rating">
+                    {% for star in (1..5) %}
+                      <i class="fa fa-star"></i>
+                    {% endfor %}
+                  </div>
+                  <div class="product__price">{{ product.price | money }}</div>
+                </div>
+              </div>
+            </div>
+            {% assign count = count | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</div>
+<section class="discount">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 p-0">
+        <div class="discount__pic">
+          {% if section.settings.discount_image != blank %}
+            <img src="{{ section.settings.discount_image | image_url }}" alt="">
+          {% else -%}
+            <img src="{{ 'discount.jpg' | asset_url }}" alt="">
+          {% endif -%}
+        </div>
+      </div>
+      <div class="col-lg-6 p-0">
+        <div class="discount__text">
+          <div class="discount__text__title">
+            <span>Discount</span>
+            <h2>{{ section.settings.discount_date }}</h2>
+            <h5><span>Sale</span>{{ section.settings.sell_peersentage }}</h5>
+          </div>
+          <div class="discount__countdown" id="countdown-time">
+            <div class="countdown__item">
+              <span>22</span>
+              <p>Days</p>
+            </div>
+            <div class="countdown__item">
+              <span>18</span>
+              <p>Hour</p>
+            </div>
+            <div class="countdown__item">
+              <span>46</span>
+              <p>Min</p>
+            </div>
+            <div class="countdown__item">
+              <span>05</span>
+              <p>Sec</p>
+            </div>
+          </div>
+          <a href="/collections/all">Shop now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+  const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+
+  wishlistBtns.forEach((btn) => {
+    btn.addEventListener('click', function () {
+      const productId = this.dataset.productId;
+      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+      // Toggle wishlist
+      if (wishlist.includes(productId)) {
+        wishlist = wishlist.filter(id => id !== productId);
+        alert('Product removed from wishlist!');
+        window.location.reload();
+      } else {
+        wishlist.push(productId);
+        alert('Product added to wishlist!');
+        window.location.reload();
+      }
+
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    });
+  });
+});
+
+  document.addEventListener("DOMContentLoaded", function () {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+  wishlist.forEach(productId => {
+     const heartIcon = document.querySelector(`.wishlist-btn[data-product-id="${productId}"] svg`);
+    if (heartIcon) {
+      heartIcon.style.fill = 'red'; // Change SVG icon color to red
+    }
+  });
+});
+
+   document.addEventListener("DOMContentLoaded", function () {
+    const addToCartButtons = document.querySelectorAll(".add-to-cart");
+    const cartPopup = document.getElementById("cart-popup");
+    const cartPopupDetails = document.getElementById("cart-popup__details");
+    const closePopup = document.querySelector(".cart-popup__close");
+
+    addToCartButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const productId = this.dataset.id;
+        const productImage = this.dataset.image;
+        const productName = this.dataset.name;
+        const productPrice = this.dataset.price;
+
+        // Update the floating cart popup
+        cartPopupDetails.innerHTML = `
+          <div class="cart-popup__item">
+            <img src="${productImage}" alt="${productName}" class="cart-popup__img">
+            <div class="cart-popup__info">
+              <h6>${productName}</h6>
+              <p>${productPrice}</p>
+            </div>
+          </div>
+        `;
+
+        // Show the cart popup
+        cartPopup.classList.add("show");
+
+        // Perform AJAX request to add to cart
+        fetch('{{ routes.cart_add_url }}?id=' + productId, {
+          method: 'GET',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Product added to cart:", data);
+          })
+          .catch((error) => {
+            console.error("Error adding to cart:", error);
+          });
+      });
+    });
+
+    // Close popup functionality
+$(".cart-popup__close").on("click", function () {
+    $(".cart-popup").removeClass("show"); // Remove the 'show' class
+    location.reload(); // Reload the page
+});
+     
+  });
+</script>
+{% schema %}
+{
+  "name": "t:sections.featured-collection.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+     {
+      "type": "text",
+      "label": "Discount Date",
+      "id": "discount_date",
+    },
+    {
+      "type": "text",
+      "label": "Sell Perseantage",
+      "id": "sell_peersentage",
+    },
+    {
+      "type": "image_picker",
+      "label": "Discount Image",
+      "id": "discount_image",
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "t:sections.featured-collection.settings.title.default",
+      "label": "t:sections.featured-collection.settings.title.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.all.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.featured-collection.settings.description.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.featured-collection.settings.show_description.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "description_style",
+      "label": "t:sections.featured-collection.settings.description_style.label",
+      "options": [
+        {
+          "value": "body",
+          "label": "t:sections.featured-collection.settings.description_style.options__1.label"
+        },
+        {
+          "value": "subtitle",
+          "label": "t:sections.featured-collection.settings.description_style.options__2.label"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:sections.featured-collection.settings.description_style.options__3.label"
+        }
+      ],
+      "default": "body"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured-collection.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 25,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.featured-collection.settings.products_to_show.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.featured-collection.settings.columns_desktop.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.featured-collection.settings.full_width.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "default": true,
+      "label": "t:sections.featured-collection.settings.show_view_all.label"
+    },
+    {
+      "type": "select",
+      "id": "view_all_style",
+      "label": "t:sections.featured-collection.settings.view_all_style.label",
+      "options": [
+        {
+          "value": "link",
+          "label": "t:sections.featured-collection.settings.view_all_style.options__1.label"
+        },
+        {
+          "value": "outline",
+          "label": "t:sections.featured-collection.settings.view_all_style.options__2.label"
+        },
+        {
+          "value": "solid",
+          "label": "t:sections.featured-collection.settings.view_all_style.options__3.label"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_desktop_slider",
+      "label": "t:sections.featured-collection.settings.enable_desktop_slider.label",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.header.content"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.featured-collection.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.all.image_shape.options__1.label"
+        },
+        {
+          "value": "arch",
+          "label": "t:sections.all.image_shape.options__2.label"
+        },
+        {
+          "value": "blob",
+          "label": "t:sections.all.image_shape.options__3.label"
+        },
+        {
+          "value": "chevronleft",
+          "label": "t:sections.all.image_shape.options__4.label"
+        },
+        {
+          "value": "chevronright",
+          "label": "t:sections.all.image_shape.options__5.label"
+        },
+        {
+          "value": "diamond",
+          "label": "t:sections.all.image_shape.options__6.label"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:sections.all.image_shape.options__7.label"
+        },
+        {
+          "value": "round",
+          "label": "t:sections.all.image_shape.options__8.label"
+        }
+      ],
+      "default": "default",
+      "label": "t:sections.all.image_shape.label",
+      "info": "t:sections.all.image_shape.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_vendor.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.show_rating.label",
+      "info": "t:sections.featured-collection.settings.show_rating.info"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "info": "t:sections.main-collection-product-grid.settings.quick_add.info",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+        },
+        {
+          "value": "bulk",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.header_mobile.content"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "t:sections.featured-collection.settings.columns_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.featured-collection.settings.columns_mobile.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.featured-collection.settings.columns_mobile.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_on_mobile",
+      "default": false,
+      "label": "t:sections.featured-collection.settings.swipe_on_mobile.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured-collection.presets.name"
+    }
+  ]
+}
+{% endschema %}

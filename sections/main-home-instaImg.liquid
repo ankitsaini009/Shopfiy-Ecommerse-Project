@@ -1,0 +1,53 @@
+<br>
+<div class="instagram">
+  <div class="container-fluid">
+    <div class="row">
+      {% for block in section.blocks %}
+        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+          <div class="instagram__item set-bg" data-setbg="{{ block.settings.image | image_url }}">
+            <div class="instagram__text">
+              <i class="fa fa-instagram"></i>
+              <a href="{{ block.settings.instagram_link }}">{{ block.settings.instagram_handle }}</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Instagram Images Home",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "instagram_item",
+      "name": "Instagram Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Instagram Image"
+        },
+        {
+          "type": "url",
+          "id": "instagram_link",
+          "label": "Instagram Link"
+        },
+        {
+          "type": "text",
+          "id": "instagram_handle",
+          "label": "Instagram Handle"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram Images",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

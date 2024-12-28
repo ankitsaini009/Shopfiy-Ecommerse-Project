@@ -1,0 +1,125 @@
+<section class="wishlist-page">
+  <div class="container">
+    <h1 style="margin-top: 29px;">Comparison Products</h1>
+    <br>
+    <!-- Empty Wishlist Message -->
+    <p id="empty-wishlist" style="display: none;">Your comparison list is empty!</p>
+
+    <!-- Wishlist Table -->
+    <div class="shop__cart__table">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wishlist-items">
+          <!-- Comparison items will be dynamically inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function () {
+    // Fetch all product details into a JavaScript object
+    var allProducts = [];
+    {% assign all_products = collections.all.products %}
+    {% if all_products.size > 0 %}
+      allProducts = [
+        {% for product in all_products %}
+          {
+            id: "{{ product.id }}",
+            title: "{{ product.title | escape }}",
+            price: "{{ product.price | money_without_currency }}",
+            image: "{{ product.featured_image | img_url: '200x' }}",
+            url: "{{ product.url }}",
+            size: "{{ product.variants.first.option1 }}",
+             color: "{{ product.variants.first.option2 }}"
+          }{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+      ];
+      console.log("All products loaded:", allProducts);
+    {% else %}
+      console.log("No products found in the collection.");
+    {% endif %}
+
+    // Fetch the comparison list from localStorage
+    var compareList = JSON.parse(localStorage.getItem("compareList")) || [];
+    console.log("Comparison List IDs:", compareList);
+
+    // Check if comparison list is empty
+    if (compareList.length === 0) {
+      $("#empty-wishlist").show(); // Show "comparison list is empty" message
+      $(".shop__cart__table").hide(); // Hide the table
+      return;
+    }
+
+    // Filter the products from allProducts based on compareList IDs
+    var comparisonProducts = allProducts.filter(function (product) {
+      return compareList.includes(product.id); // Ensure product.id matches with compareList
+    });
+
+    // Display the products in the comparison table
+    if (comparisonProducts.length > 0) {
+     comparisonProducts.forEach(function (product) {
+  $("#wishlist-items").append(`
+    <tr>
+      <td class="cart__product__item">
+        <a href="${product.url}" style="display:flex; align-items:center;">
+          <img src="${product.image}" alt="${product.title}" style="width: 50px; height: auto;">
+          <div class="cart__product__item__title"  style="display:flex; align-items:center; gap:25px;">
+          <div>
+            <h6 style="margin:0px;">${product.title}</h6>
+            <div class="rating">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+            </div>
+            </div>
+             <div><p style="margin-bottom:6px; font-size: 14px; color: gray;">
+              <strong>Size:</strong> ${product.size || "N/A"}<br>
+              <strong>Color:</strong> ${product.color || "N/A"}
+            </p>
+            </div>
+           
+          </div>
+        </a>
+      </td>
+      <td>RS. ${product.price}</td>
+      <td>
+        <button class="remove-from-wishlist" data-id="${product.id}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </td>
+    </tr>
+  `);
+});
+
+    } else {
+      $("#empty-wishlist").show(); // Show "comparison list is empty" message
+      $(".shop__cart__table").hide(); // Hide the table
+    }
+
+    // Remove product from comparison list
+   $(document).on("click", ".remove-from-wishlist", function () {
+  var productId = $(this).data("id").toString(); // Ensure productId is a string
+
+  // Remove the product from localStorage
+  compareList = compareList.filter(function (id) {
+    return id !== productId; // Compare as strings
+  });
+
+  localStorage.setItem("compareList", JSON.stringify(compareList));
+
+  // Reload the page to reflect changes
+  location.reload();
+});
+
+  });
+</script>

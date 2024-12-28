@@ -1,0 +1,286 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+<!-- Bootstrap CSS -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha512-HG2GT10Kfwaz3YhFjD0GzTP0J5/u48uBQn8htcXY/hknv4psGSxYFQ/R/m+/sh9oyBY/yZQzAzO2iUQ1RCBfXA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- if section.settings.enable_shop_login_button == false -%}
+  {%- assign hide_shop_login_button = true -%}
+{%- endif -%}
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="customer login section-{{ section.id }}-padding">
+  <!-- Password Recovery Modal -->
+  <!-- Modal Structure -->
+  <div
+    class="modal fade"
+    id="RecoverPasswordModal"
+    tabindex="-1"
+    aria-labelledby="RecoverPasswordLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="RecoverPasswordLabel">
+            {{ 'customer.login_page.forgot_password' | t }}
+          </h5>
+        </div>
+        <div class="modal-body">
+          <h1 id="recover" tabindex="-1">
+            {{ 'customer.recover_password.title' | t }}
+          </h1>
+          <p>{{ 'customer.recover_password.subtext' | t }}</p>
+
+          <!-- Recover Password Form -->
+          {%- form 'recover_customer_password' -%}
+            <div class="field">
+              <label for="RecoverEmail">
+                {{ 'customer.login_page.email' | t }}
+              </label>
+              <input
+                class="form-control"
+                type="email"
+                name="email"
+                id="RecoverEmail"
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                {% if form.errors %}
+                  aria-invalid="true"
+                  aria-describedby="RecoverEmail-email-error"
+                  autofocus
+                {% endif %}
+                placeholder="{{ 'customer.login_page.email' | t }}"
+                style="width:100%; font-size:14px;padding:8px 6px;border:1px solid black;border-radius:4px;outline:none;"
+              >
+            </div>
+            {%- if form.errors -%}
+              <small
+                id="RecoverEmail-email-error"
+                class="form__message text-danger"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-error.svg' | inline_asset_content -}}
+                </span>
+                {{ form.errors.messages.form }}
+              </small>
+            {%- endif -%}
+            <button>
+              {{ 'customer.login_page.submit' | t }}
+            </button>
+          {%- endform -%}
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            {{ 'customer.login_page.cancel' | t }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container"
+    style="
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <!-- Page Title -->
+    <h1 id="login" tabindex="-1" class="text-center" style="font-size:32px">
+      {{ 'customer.login_page.title' | t }}
+    </h1>
+
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <div class=" ">
+          <div class="">
+            <!-- Success Message -->
+            {%- if recover_success == true -%}
+              <div class="alert alert-success text-center" role="alert" tabindex="-1" autofocus>
+                <span class="svg-wrapper">
+                  {{- 'icon-success.svg' | inline_asset_content -}}
+                </span>
+                {{ 'customer.recover_password.success' | t }}
+              </div>
+            {%- endif -%}
+
+            <!-- Form -->
+            {%- form 'customer_login', novalidate: 'novalidate' -%}
+              <!-- Error Message -->
+              {%- if form.errors -%}
+                <div class="alert alert-danger" role="alert" tabindex="-1" autofocus>
+                  <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+                  <span class="svg-wrapper">
+                    {{- 'icon-error.svg' | inline_asset_content -}}
+                  </span>
+                  {{ 'templates.contact.form.error_heading' | t }}
+                </div>
+                {{ form.errors | default_errors }}
+              {%- endif -%}
+
+              <!-- Third-party Login Option -->
+              {%- if shop.features.login_with_shop_classic_customer_accounts? -%}
+                <section name="sign-in-with-shop-provider" class="text-center my-3">
+                  {{ shop | login_button: hide_button: hide_shop_login_button }}
+                  {%- unless hide_shop_login_button -%}
+                    <p class="text-muted my-2">
+                      {{ 'customer.login_page.alternate_provider_separator' | t }}
+                    </p>
+                  {%- endunless -%}
+                </section>
+              {%- endif -%}
+
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="CustomerEmail" class="form-label" style="font-size:22px">
+                  {{ 'customer.login_page.email' | t }}
+                </label>
+                <input
+                  type="email"
+                  class="form-control {% if form.errors contains 'form' %}is-invalid{% endif %}"
+                  name="customer[email]"
+                  id="CustomerEmail"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  placeholder="{{ 'customer.login_page.email' | t }}"
+                  style="width:100%; font-size:20px !important;padding:20px 6px;border:1px solid black;border-radius:4px;outline:none;"
+                >
+              </div>
+
+              <!-- Password Field -->
+              {%- if form.password_needed -%}
+                <div class="mb-3">
+                  <label for="CustomerPassword" class="form-label" style="font-size:22px">
+                    {{ 'customer.login_page.password' | t }}
+                  </label>
+                  <input
+                    style="width:100%; font-size:20px !important;padding:20px 6px;border:1px solid black;border-radius:4px;outline:none;"
+                    type="password"
+                    class="form-control {% if form.errors contains 'form' %}is-invalid{% endif %}"
+                    name="customer[password]"
+                    id="CustomerPassword"
+                    autocomplete="current-password"
+                    placeholder="{{ 'customer.login_page.password' | t }}"
+                  >
+                </div>
+
+                <div class="text-end mb-3">
+                  <a
+                    href="#recover"
+                    class="link-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#RecoverPasswordModal"
+                    style="text-align: center;"
+                  >
+                    {{ 'customer.login_page.forgot_password' | t }}
+                  </a>
+                </div>
+              {%- endif -%}
+
+              <!-- Sign In Button -->
+              <div class="d-grid">
+                <button
+                  type="submit"
+                  class="btn btn-danger text-center"
+                  style="width:100% ; --buttons-border-opacity: 0;"
+                >
+                  {{ 'customer.login_page.sign_in' | t }}
+                </button>
+              </div>
+
+              <!-- Register Link -->
+              <div class="text-center mt-3" style="font-size:16px;">
+                Don't have an account?
+                <a href="{{ routes.account_register_url }}" class="btn btn-link">
+                  {{ 'customer.login_page.create_account' | t }}
+                </a>
+              </div>
+            {%- endform -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- if shop.checkout.guest_login -%}
+    <div>
+      <hr>
+      <h2>{{ 'customer.login_page.guest_title' | t }}</h2>
+
+      {%- form 'guest_login' -%}
+        <button>
+          {{ 'customer.login_page.guest_continue' | t }}
+        </button>
+      {%- endform -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-login.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_shop_login_button",
+      "label": "t:sections.main-login.shop_login_button.enable",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

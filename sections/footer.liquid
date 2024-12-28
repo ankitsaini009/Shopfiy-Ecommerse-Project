@@ -1,0 +1,351 @@
+{% comment %}theme-check-disable UndefinedObject{% endcomment %}
+{{ 'section-footer.css' | asset_url | stylesheet_tag }}
+{{ 'component-newsletter.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+<!-- Js Plugins -->
+<script src="{{ 'jquery-3.3.1.min.js' | asset_url }}"></script>
+<script src="{{ 'bootstrap.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery.magnific-popup.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery-ui.min.js' | asset_url }}"></script>
+<script src="{{ 'mixitup.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery.countdown.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery.slicknav.js' | asset_url }}"></script>
+<script src="{{ 'owl.carousel.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery.nicescroll.min.js' | asset_url }}"></script>
+<script src="{{ 'main.js' | asset_url }}"></script>
+{%- style -%}
+  .footer {
+    margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .footer {
+      margin-top: {{ section.settings.margin_top }}px;
+    }
+
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+<!-- Footer Section Begin -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-sm-7">
+        <div class="footer__about">
+          <div class="footer__logo">
+            {% if section.settings.footer_logo != blank %}
+              <a href="{{ shop.url }}">
+                <img src="{{ section.settings.footer_logo | image_url }}" alt="Logo" width="133" height="auto">
+              </a>
+            {% else %}
+              <a href="{{ shop.url }}">
+                <img src="{{ 'logo.png' | asset_url }}" alt="Logo" width="135" height="auto">
+              </a>
+            {% endif %}
+          </div>
+          <p>
+            {{
+              settings.footer_description
+              | default: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt cilisis.'
+            }}
+          </p>
+          <div class="footer__payment">
+            {% if section.settings.payment_1_icon %}
+              <a href="#"><img src="{{ section.settings.payment_1_icon | image_url }}" alt="Payment Method 1"></a>
+            {% else %}
+              <a href="#"><img src="{{ 'payment-1.png' | asset_url }}" alt="Default Payment Method 1"></a>
+            {% endif %}
+            {% if section.settings.payment_2_icon %}
+              <a href="#"><img src="{{ section.settings.payment_2_icon | image_url }}" alt="Payment Method 2"></a>
+            {% else %}
+              <a href="#"><img src="{{ 'payment-2.png' | asset_url }}" alt="Default Payment Method 2"></a>
+            {% endif %}
+            {% if section.settings.payment_3_icon %}
+              <a href="#"><img src="{{ section.settings.payment_3_icon | image_url }}" alt="Payment Method 3"></a>
+            {% else %}
+              <a href="#"><img src="{{ 'payment-3.png' | asset_url }}" alt="Default Payment Method 3"></a>
+            {% endif %}
+            {% if section.settings.payment_4_icon %}
+              <a href="#"><img src="{{ section.settings.payment_4_icon | image_url }}" alt="Payment Method 4"></a>
+            {% else %}
+              <a href="#"><img src="{{ 'payment-4.png' | asset_url }}" alt="Default Payment Method 4"></a>
+            {% endif %}
+            {% if section.settings.payment_5_icon %}
+              <a href="#"><img src="{{ section.settings.payment_5_icon | image_url }}" alt="Payment Method 5"></a>
+            {% else %}
+              <a href="#"><img src="{{ 'payment-5.png' | asset_url }}" alt="Default Payment Method 5"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-5">
+        <div class="footer__widget">
+          <h6>Quick links</h6>
+          <ul>
+            {% for link in linklists.footer.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4">
+        <div class="footer__widget">
+          <h6>Account</h6>
+          <ul>
+            {% for link in linklists['footer-manu-account'].links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-8 col-sm-8">
+        <div class="footer__newslatter">
+          {%- if section.settings.newsletter_enable -%}
+            <div class="footer-block__newsletter">
+              {%- if section.settings.newsletter_heading != blank -%}
+                <h2 class="footer-block__heading inline-richtext">{{ section.settings.newsletter_heading }}</h2>
+              {%- endif -%}
+
+              <!-- Newsletter Section -->
+              <h6>NEWSLETTER</h6>
+              {% form 'customer' %}
+                <input type="email" name="contact[email]" placeholder="Enter your email" required>
+                <button type="submit" class="site-btn">Subscribe</button>
+
+                {%- if form.errors -%}
+                  <small class="newsletter-form__message form__message" id="ContactFooter-error">
+                    <span class="svg-wrapper">
+                      {{ 'icon-error.svg' | inline_asset_content }}
+                    </span>
+                    {{ form.errors.translated_fields.email | capitalize }}
+                    {{ form.errors.messages.email }}
+                  </small>
+                {%- endif -%}
+
+                {%- if form.posted_successfully? -%}
+                  <h3
+                    class="newsletter-form__message newsletter-form__message--success form__message"
+                    id="ContactFooter-success"
+                  >
+                    <span class="svg-wrapper">
+                      {{ 'icon-success.svg' | inline_asset_content }}
+                    </span>
+                    {{ 'newsletter.success' | t }}
+                  </h3>
+                {%- endif -%}
+              {% endform %}
+            </div>
+          {%- endif -%}
+
+          <br>
+          <div class="footer__social">
+            {% if section.settings.facebook_url %}
+              <a href="{{ section.settings.facebook_url }}" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+            {% else %}
+              <a href="https://facebook.com" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+            {% endif %}
+            {% if section.settings.twitter_url %}
+              <a href="{{ section.settings.twitter_url }}" target="_blank"><i class="fa fa-twitter"></i></a>
+            {% else %}
+              <a href="https://twitter.com" target="_blank"><i class="fa fa-twitter"></i></a>
+            {% endif %}
+            {% if section.settings.youtube_url %}
+              <a href="{{ section.settings.youtube_url }}" target="_blank"><i class="fa fa-youtube-play"></i></a>
+            {% else %}
+              <a href="https://youtube.com" target="_blank"><i class="fa fa-youtube-play"></i></a>
+            {% endif %}
+            {% if section.settings.instagram_url %}
+              <a href="{{ section.settings.instagram_url }}" target="_blank"><i class="fa fa-instagram"></i></a>
+            {% else %}
+              <a href="https://instagram.com" target="_blank"><i class="fa fa-instagram"></i></a>
+            {% endif %}
+            {% if section.settings.pinterest_url %}
+              <a href="{{ section.settings.pinterest_url }}" target="_blank"><i class="fa fa-pinterest"></i></a>
+            {% else %}
+              <a href="https://pinterest.com" target="_blank"><i class="fa fa-pinterest"></i></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="footer__copyright__text">
+          <p>
+            Copyright &copy;
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank">Colorlib</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Footer Section End -->
+<!-- Search Begin -->
+<div class="search-model">
+  <div class="h-100 d-flex align-items-center justify-content-center">
+    <div class="search-close-switch">+</div>
+    <form class="search-model-form">
+      <input type="text" id="search-input" placeholder="Search here.....">
+    </form>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Footer Logo"
+    },
+    {
+      "type": "text",
+      "id": "footer_description",
+      "label": "Footer Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_1_icon",
+      "label": "Payment Icon 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_2_icon",
+      "label": "Payment Icon 2"
+
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_3_icon",
+      "label": "Payment Icon 3"
+
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_4_icon",
+      "label": "Payment Icon 4"
+
+    },
+    {
+      "type": "image_picker",
+      "id": "payment_5_icon",
+      "label": "Payment Icon 5"
+
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL"
+
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube URL"
+
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "pinterest_url",
+      "label": "Pinterest URL"
+
+    },
+    {
+      "type": "text",
+      "id": "about_link",
+      "label": "About Link"
+
+    },
+    {
+      "type": "text",
+      "id": "blogs_link",
+      "label": "Blogs Link"
+
+    },
+    {
+      "type": "text",
+      "id": "contact_link",
+      "label": "Contact Link"
+
+    },
+    {
+      "type": "text",
+      "id": "faq_link",
+      "label": "FAQ Link"
+
+    },
+    {
+      "type": "text",
+      "id": "account_link",
+      "label": "My Account Link"
+
+    },
+    {
+      "type": "text",
+      "id": "orders_link",
+      "label": "Orders Link"
+
+    },
+    {
+      "type": "text",
+      "id": "checkout_link",
+      "label": "Checkout Link"
+
+    },
+    {
+      "type": "text",
+      "id": "wishlist_link",
+      "label": "Wishlist Link"
+    },
+     {
+      "type": "checkbox",
+      "label": "Enable Newsletter",
+      "id": "newsletter_enable",
+      "default": true
+    },
+    {
+      "type": "text",
+      "label": "Newsletter Heading",
+      "id": "newsletter_heading",
+      "default": "Subscribe to our Newsletter",
+      "placeholder": "Enter the heading for the newsletter section"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ]
+}
+{% endschema %}

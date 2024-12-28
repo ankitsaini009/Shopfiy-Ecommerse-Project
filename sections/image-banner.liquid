@@ -1,0 +1,182 @@
+<section class="categories">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6 p-0">
+        <div class="categories__item categories__large__item set-bg"
+          {% if section.settings.category_1_image %}
+            data-setbg="{{ section.settings.category_1_image | image_url }}"
+          {% else %}
+            data-setbg="{{ 'category-1.jpg' | asset_url }}"  <!-- Static fallback image for category 1 -->
+          {% endif %}>
+         
+          <div class="categories__text">
+            <h1>{{ section.settings.category_1_title | default: "Default Category" }}</h1>
+            <p>{{ section.settings.category_1_description | default: "Sit amet, consectetur adipiscing elit." }}</p>
+            <a href="{{ section.settings.category_1_link | default: '#' }}">Shop now</a>
+          </div>
+        </div>
+      </div> 
+      <div class="col-lg-6">
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+            <div class="categories__item set-bg"
+              {% if section.settings.category_2_image %}
+                data-setbg="{{ section.settings.category_2_image | image_url }}"
+              {% else %}
+                data-setbg="{{ 'category-2.jpg' | asset_url }}"  <!-- Static fallback image for category 2 -->
+              {% endif %}>
+            
+              <div class="categories__text">
+                <h4>{{ section.settings.category_2_title | default: "Default Category" }}</h4>
+                <p>
+                  {{ collections['men-s'].products_count | default: "0 items" }} items
+                </p>
+
+                <a href="{{ section.settings.category_2_link | default: '#' }}">Shop now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+            <div class="categories__item set-bg"
+              {% if section.settings.category_3_image %}
+                data-setbg="{{ section.settings.category_3_image | image_url }}"
+              {% else %}
+                data-setbg="{{ 'category-3.jpg' | asset_url }}"  <!-- Static fallback image for category 3 -->
+              {% endif %}>
+            
+              <div class="categories__text">
+                <h4>{{ section.settings.category_3_title | default: "Default Category" }}</h4>
+                <p>
+                {{ collections['kid-s'].products_count | default: "0 items" }} items
+</p>                <a href="{{ section.settings.category_3_link | default: '#' }}">Shop now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+            <div class="categories__item set-bg"
+              {% if section.settings.category_4_image %}
+                data-setbg="{{ section.settings.category_4_image | image_url }}"
+              {% else %}
+                data-setbg="{{ 'category-4.jpg' | asset_url }}"  <!-- Static fallback image for category 4 -->
+              {% endif %}>
+            
+              <div class="categories__text">
+                <h4>{{ section.settings.category_4_title | default: "Default Category" }}</h4>
+                <p>
+                  {{ collections['cosmetics'].products_count | default: "0 items" }} items
+                </p>
+
+                <a href="{{ section.settings.category_4_link | default: '#' }}">Shop now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+            <div class="categories__item set-bg"
+              {% if section.settings.category_5_image %}
+                data-setbg="{{ section.settings.category_5_image | image_url }}"
+              {% else %}
+                data-setbg="{{ 'category-5.jpg' | asset_url }}"  <!-- Static fallback image for category 5 -->
+              {% endif %}>
+            
+              <div class="categories__text">
+                <h4>{{ section.settings.category_5_title | default: "Default Category" }}</h4>
+                  <p>
+                    {{ collections['accessories'].products_count | default: "0 items" }} items
+                  </p>
+                <a href="{{ section.settings.category_5_link | default: '#' }}">Shop now</a>
+              </div>
+            </div> 
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main-home-images",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "category_1_image",
+      "label": "Category 1 Image"
+    },
+    {
+      "type": "text",
+      "id": "category_1_title",
+      "label": "Category 1 Title"
+    },
+    {
+      "type": "textarea",
+      "id": "category_1_description",
+      "label": "Category 1 Description"
+     },
+    {
+      "type": "url",
+      "id": "category_1_link",
+      "label": "Category 1 Link"
+    },
+    {
+      "type": "text",
+      "id": "category_2_title",
+      "label": "Category 2 Title"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_2_image",
+      "label": "Category 2 Image"
+    },
+    {
+      "type": "url",
+      "id": "category_2_link",
+      "label": "Category 2 Link"
+    },
+    {
+      "type": "text",
+      "id": "category_3_title",
+      "label": "Category 3 Title"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_3_image",
+      "label": "Category 3 Image"
+    },
+    {
+      "type": "url",
+      "id": "category_3_link",
+      "label": "Category 3 Link"
+    },
+    {
+      "type": "text",
+      "id": "category_4_title",
+      "label": "Category 4 Title"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_4_image",
+      "label": "Category 4 Image"
+    },
+    {
+      "type": "url",
+      "id": "category_4_link",
+      "label": "Category 4 Link"
+    },
+    {
+      "type": "text",
+      "id": "category_5_title",
+      "label": "Category 5 Title"
+    },
+    {
+      "type": "image_picker",
+      "id": "category_5_image",
+      "label": "Category 5 Image"
+    },
+    {
+      "type": "url",
+      "id": "category_5_link",
+      "label": "Category 5 Link"
+    }
+  ]
+}
+{% endschema %}

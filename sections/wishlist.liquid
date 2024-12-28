@@ -1,0 +1,109 @@
+<section class="wishlist-page">
+  <div class="container">
+    <h1 style="margin-top: 29px;">Your Wishlist</h1>
+    <br>
+    <!-- Empty Wishlist Message -->
+    <p id="empty-wishlist" style="display: none;">Your wishlist is empty!</p>
+
+    <!-- Wishlist Table -->
+    <div class="shop__cart__table">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wishlist-items">
+          <!-- Wishlist items will be dynamically inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  $(document).ready(function () {
+  // Fetch the wishlist from localStorage
+
+      // Pass all product details to JavaScript
+    var allProducts = [];
+    {% assign all_products = collections.all.products %}
+    {% if all_products.size > 0 %}
+  var allProducts = [
+     {% for product in all_products %}
+      {
+          id: {{ product.id }},
+          title: "{{ product.title | escape }}",
+          price: "{{ product.price | money_without_currency }}",
+          image: "{{ product.featured_image | img_url: '200x' }}",
+          url: "{{ product.url }}"
+        }{% if forloop.last == false %},{% endif %}
+      {% endfor %}
+    ];
+    console.log("allProducts array:", allProducts);
+  {% else %}
+    console.log("No products found in the collection.");
+  {% endif %}
+
+  var allwishlistproductids = JSON.parse(localStorage.getItem("wishlist"));
+  console.log("Wishlist IDs:", allwishlistproductids);
+
+  // Check if wishlist is empty
+  if (!allwishlistproductids || allwishlistproductids.length === 0) {
+    $("#empty-wishlist").show(); // Show "wishlist is empty" message
+    $(".shop__cart__table").hide(); // Hide the table
+    return;
+  }
+
+  // Filter the products from allProducts
+  var wishlistProducts = allProducts.filter(function (product) {
+    return allwishlistproductids.includes(product.id.toString());
+  });
+
+  // Display the products in the wishlist table
+  wishlistProducts.forEach(function (product) {
+    $("#wishlist-items").append(`
+      <tr>
+      <td class="cart__product__item">
+                              
+                 <a href="${product.url}" style="display:flex; align-items:center;">            
+            <img src="${product.image}" alt="${product.title}" style="width: 50px; height: auto;">
+        
+       
+                                <div class="cart__product__item__title">
+                                 <h6 style="margin:0px;"> ${product.title}</h6>
+       
+                                   
+                             
+                                  <div class="rating">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                  </div>
+                                </div>
+                                   </a>
+      
+        <td>RS. ${product.price}</td>
+        <td><button class="remove-from-wishlist" data-id="${product.id}"><i class="fa-solid fa-xmark"></i></button></td>
+      </tr>
+    `);
+  });
+
+  // Add remove functionality
+  $(".remove-from-wishlist").click(function () {
+    var idToRemove = $(this).data("id").toString();
+    allwishlistproductids = allwishlistproductids.filter(function (id) {
+      return id !== idToRemove;
+    });
+
+    // Update localStorage
+    localStorage.setItem("wishlist", JSON.stringify(allwishlistproductids));
+
+    // Refresh the page or remove the item from the table
+    location.reload();
+  });
+});
+</script>

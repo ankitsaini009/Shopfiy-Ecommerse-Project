@@ -1,0 +1,77 @@
+<section class="banner set-bg" data-setbg="{{ section.settings.background_image | image_url }}">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-7 col-lg-8 m-auto">
+        <div class="banner__slider owl-carousel">
+          {% if section.blocks.size > 0 %}
+            {% for block in section.blocks %}
+              <div class="banner__item">
+                <div class="banner__text">
+                  <span>{{ block.settings.subtitle }}</span>
+                  <h1>{{ block.settings.title }}</h1>
+                  <a href="{{ block.settings.link }}">{{ block.settings.button_text }}</a>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Default Content if no blocks are present -->
+            <div class="banner__item">
+              <div class="banner__text">
+                <span>Default Collection</span>
+                <h1>Default Banner Title</h1>
+                <a href="#" class="btn btn-danger">Shop Now</a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Banner Section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner_item",
+      "name": "Banner Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button Link"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

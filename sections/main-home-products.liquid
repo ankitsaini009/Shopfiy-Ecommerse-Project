@@ -1,0 +1,130 @@
+<section class="trend spad">
+  <div class="container">
+    <div class="row">
+      <!-- Hot Trend Category -->
+      <div class="col-lg-4 col-md-4 col-sm-6">
+        <div class="trend__content">
+          <div class="section-title">
+            <h4>Hot Trend</h4>
+          </div>
+          {% assign hot_count = 0 %}
+          {% for product in collections.all.products %}
+            {% if hot_count < 3 %}
+              {% if product.tags contains 'hot_trend' %}
+                <div class="trend__item">
+                  <div class="trend__item__pic">
+                    <a href="{{ product.url }}">
+                      <img
+                        src="{{ product.featured_image | img_url: 'medium' }}"
+                        alt="{{ product.title }}"
+                        style="width: 90px;"
+                      >
+                  </div>
+                  <div class="trend__item__text">
+                    <h6>{{ product.title }}</h6>
+                    <div class="rating">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <div class="product__price">{{ product.price | money }}</div>
+                  </div>
+                 </a>
+                </div>
+                {% assign hot_count = hot_count | plus: 1 %}
+              {% endif %}
+            {% else %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Best Seller Category -->
+      <div class="col-lg-4 col-md-4 col-sm-6">
+        <div class="trend__content">
+          <div class="section-title">
+            <h4>Best Seller</h4>
+          </div>
+          {% assign best_seller_count = 0 %}
+          {% for product in collections.all.products %}
+            {% if best_seller_count < 3 %}
+              {% if product.tags contains 'best_seller' %}
+                <div class="trend__item">
+                  <div class="trend__item__pic">
+                    <a href="{{ product.url }}">
+                      <img
+                        src="{{ product.featured_image | img_url: 'medium' }}"
+                        alt="{{ product.title }}"
+                        style="width: 90px;"
+                      >
+                   
+                  </div>
+                  <div class="trend__item__text">
+                    <h6>{{ product.title }}</h6>
+                    <div class="rating">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <div class="product__price">{{ product.price | money }}</div>
+                  </div>
+                 </a>
+                </div>
+                {% assign best_seller_count = best_seller_count | plus: 1 %}
+              {% endif %}
+            {% else %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Feature Category -->
+      <div class="col-lg-4 col-md-4 col-sm-6">
+        <div class="trend__content">
+          <div class="section-title">
+            <h4>Feature</h4>
+          </div>
+          {% assign feature_count = 0 %}
+          {% for product in collections.all.products %}
+            {% if feature_count < 3 %}
+              {% if product.tags contains 'feature' %}
+                <div class="trend__item">
+                  <div class="trend__item__pic">
+                    <a href="{{ product.url }}">
+                      <img
+                        src="{{ product.featured_image | img_url: 'medium' }}"
+                        alt="{{ product.title }}"
+                        style="width: 90px;"
+                      >
+                    
+                  </div>
+                  <div class="trend__item__text">
+                    <h6>{{ product.title }}</h6>
+                    <div class="rating">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <div class="product__price">{{ product.price | money }}</div>
+                  </div>
+                </a>
+                </div>
+                {% assign feature_count = feature_count | plus: 1 %}
+              {% endif %}
+            {% else %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
